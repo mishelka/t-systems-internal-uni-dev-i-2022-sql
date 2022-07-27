@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS person, color;
+DROP TABLE IF EXISTS person, customer, color, contacts CASCADE;
 
 CREATE TABLE color (
     id INT GENERATED ALWAYS AS IDENTITY,
@@ -15,4 +15,19 @@ CREATE TABLE person (
     birth_date DATE,
     address VARCHAR(25),
     salary DECIMAL(18,2) DEFAULT 5000.00 CHECK(salary > 0)
+);
+
+ALTER TABLE person RENAME TO customer;
+ALTER TABLE customer RENAME COLUMN id TO customer_id;
+
+CREATE TABLE contacts (
+   contact_id INT GENERATED ALWAYS AS IDENTITY,
+   customer_id INT,
+   contact_name VARCHAR(255) NOT NULL,
+   phone VARCHAR(15),
+   email VARCHAR(100),
+   PRIMARY KEY(contact_id),
+   CONSTRAINT fk_customer
+      FOREIGN KEY(customer_id)
+	  REFERENCES customer(customer_id)
 );
