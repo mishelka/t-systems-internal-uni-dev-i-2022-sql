@@ -22,6 +22,10 @@
 
 -- select * from customer;
 
-select first_name, last_name, city, phone
-    from customer
-    where phone like '+55%' and city like 'São%';
+-- select first_name, last_name, city, phone
+--     from customer
+--     where phone like '+55%' and city like 'São%';
+
+-- select first_name, last_name
+-- from customer
+-- where country = 'Czech Republic';
