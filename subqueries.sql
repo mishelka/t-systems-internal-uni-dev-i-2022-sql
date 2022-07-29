@@ -31,7 +31,16 @@ WHERE t.track_id NOT IN (
 
 --Vypíšte zoznam skladieb, ktoré neboli kúpené ani raz.
 --Pre overenie správnosti dopytu vedzte, že počet týchto skladieb je 1519.
-SELECT name FROM track
+SELECT count(name) FROM track
 WHERE track_id NOT IN (
     SELECT track_id from invoice_line
 );
+
+select count(name) from track t
+LEFT join invoice_line il on t.track_id = il.track_id
+--where il.track_id is null;
+order by il.track_id nulls first;
+
+select count(name) from invoice_line il
+RIGHT join track t on t.track_id = il.track_id
+where il.track_id is null;
