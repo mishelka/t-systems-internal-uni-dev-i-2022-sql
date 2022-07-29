@@ -82,12 +82,28 @@ from album a
         on t.genre_id = g.genre_id
 where g.name = 'Soundtrack';
 
+--efektivnejsie, vybera najprv len soundtrack a az potom pripaja albumy
+select distinct a.title, g.name as genre
+from track t
+    inner join genre g
+        on g.genre_id = t.genre_id
+        and g.name = 'Soundtrack'
+    inner join album a
+        on t.album_id = a.album_id;
+
 select distinct a.title, g.name as genre
 from album a, track t, genre g
 where a.album_id = t.album_id
     and t.genre_id = g.genre_id
     and g.name = 'Soundtrack';
 
+--Vypíšte objednávku na základe jej id s jej položkami v tvare:
+-- *číslo objednávky,
+-- *názov skladby,
+-- názov jej interpreta (nie skladateľa),
+-- *názov albumu,
+-- *jednotková cena,
+-- *meno zákazníka (v jednom stĺpci kombinácia mena a priezviska)
 --6
 select
     i.invoice_id,
@@ -107,8 +123,27 @@ from invoice i
         on a.album_id = t.album_id
     join artist
         on artist.artist_id = a.artist_id
+where i.invoice_id = 5;;
+
+select
+    i.invoice_id,
+    t.name,
+    artist.name,
+    a.title,
+    il.unit_price,
+    c.first_name || ' ' || c.last_name as full_name
+from invoice i, customer c, invoice_line il, track t, album a, artist
+where c.customer_id = i.customer_id
+    and i.invoice_id = il.invoice_id
+    and t.track_id = il.track_id
+    and a.album_id = t.album_id
+    and artist.artist_id = a.artist_id
+    and i.invoice_id = 5;
 
 --7
+select * from employee e
+    where reports_to IS NULL; --toto je ten jeden, ktory nema sefa
+
 select c.* from customer c
     inner join employee e
     on c.city = e.city
@@ -120,13 +155,17 @@ select b.* from employee a
          on a.employee_id = b.reports_to
 where a.reports_to is null;
 
---9 Zistite, ktorí artisti nevydali ani jeden album. Vypíšte ich mená. Pre overenie správnosti vedze, že ich počet je 71.
+select * from employee e
+    where e.reports_to = 1;
+
+--9 Zistite, ktorí artisti nevydali ani jeden album.
+-- Vypíšte ich mená. Pre overenie správnosti vedze, že ich počet je 71.
 select
-    --a.artist_id, b. artist_id,
-    a.name from artist a
-    left join album b
-        on a.artist_id = b.artist_id
-where b.artist_id is null;
+    alb.artist_id,art.artist_id,
+    alb.name from artist alb
+    left join album art
+        on alb.artist_id = art.artist_id
+where art.artist_id is null;
 --order by b.artist_id nulls first;
 
 --10
@@ -134,6 +173,7 @@ where b.artist_id is null;
 -- ktoré nepatria do playlistu 'Heavy Metal Classic'.
 -- Pre overenie správnosti je počet týchto skladieb 3477
 -- (všetky skladby - zoznam skladieb playlistu)
+-- nespravne riesenie:
 -- select distinct t.track_id, t.name, t.composer from track t
 --     join playlist_track pt on t.track_id = pt.track_id
 --     join playlist p on p.playlist_id = pt.playlist_id
@@ -146,12 +186,13 @@ inner join playlist p on pt.playlist_id = p.playlist_id and p.name = 'Heavy Meta
 right join track t2 on t.track_id = t2.track_id
 where t.track_id is null;
 
---10
-select A.* from customer A
+--11
+select b.invoice_id, A.* from customer A
     left join invoice B
         on A.customer_id = B.customer_id
             and extract(year from B.invoice_date) = 2012
 where invoice_id is null
+--order by invoice_id nulls first;
 order by a.last_name, a.first_name asc;
 
 insert into customer (customer_id, first_name, last_name, email)
@@ -163,15 +204,15 @@ select a.customer_id, a.first_name, a.last_name from customer a
         on a.customer_id = b.customer_id
 where invoice_id is null;
 
---12
+--13
 select a.first_name,
-      a.last_name
+      a.last_name, a.birth_date, b.birth_date
 from employee a
         left join employee b on a.birth_date > b.birth_date
 where b.employee_id is null;
 
---13
-select b.*
+--14
+select b.milliseconds / 1000 as b_seconds, b.* --c.*
 from media_type a
         inner join track b
             on a.media_type_id = b.media_type_id
@@ -180,7 +221,7 @@ from media_type a
             on b.milliseconds < c.milliseconds
 where c.track_id is null;
 
---14
+--15
 select b.name, a.title, at.name, b.milliseconds/1000 as seconds
 from album a
     inner join track b
@@ -194,8 +235,8 @@ from album a
         and b.album_id = c.album_id
 where c.track_id is null;
 
---15
-select distinct a.name, a.milliseconds/1000 as seconds
+--16
+select distinct a.name, a.name, a.milliseconds/1000 as seconds
 from track a
     inner join album al
         on al.album_id = a.album_id
