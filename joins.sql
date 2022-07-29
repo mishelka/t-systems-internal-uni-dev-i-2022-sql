@@ -249,3 +249,16 @@ from track a
     left join track c ON c.milliseconds < a.milliseconds
          and c.album_id = al.album_id
 where c.name is null or b.name is null;
+
+--kto ma datum narodenia menej ako dnesny datum + 100
+--nefunguje na prelome rokov
+SELECT first_name || ' ' || last_name AS full_name, birth_date FROM employee
+    WHERE EXTRACT(DAY FROM birth_date)
+        BETWEEN EXTRACT(DAY FROM CURRENT_DATE)
+        AND EXTRACT(DAY FROM CURRENT_DATE)+100;
+
+--ide aj pri prelome rokov
+SELECT first_name || ' ' || last_name AS full_name, birth_date FROM employee
+    WHERE EXTRACT(DOY FROM birth_date)
+        BETWEEN EXTRACT(DOY FROM CURRENT_DATE)
+        AND EXTRACT(DOY FROM CURRENT_DATE)+100;
