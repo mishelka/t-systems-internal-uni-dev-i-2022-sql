@@ -5,7 +5,10 @@ inner join album al on t.album_id = al.album_id
 inner join artist a on a.artist_id = al.artist_id
 where a.name = 'U2');
 
-drop view savings;
+--drop view savings;
+
+--select name from savings;
+--where name = 'U2';
 
 create index idx_track_composer
 ON track(composer asc);
