@@ -2,18 +2,22 @@
 -- (najobľúbenejší - kupoval ho najčastejšie).
 -- Pre overenie vedzte, že skladby od trojice Mike Bordin, Billy Gould,
 -- Mike Patton si kúpil najviackrát (3x).
-select composer, count(composer) from invoice i
-    inner join customer c
-        on i.customer_id = c.customer_id
-        and c.first_name = 'Wyatt'
-        and c.last_name = 'Girard'
-    inner join invoice_line il
-        on i.invoice_id = il.invoice_id
-    inner join track t
-        on t.track_id = il.track_id
-        and t.composer is not null
-group by t.composer
-order by sum(quantity) desc;
+--COUNT(*) = (SELECT MAX(C) FROM (SELECT COUNT(*) AS C FROM A GROUP BY A) AS Q)
+
+select max(ct) from (
+    select composer, count(composer) as ct from invoice i
+        inner join customer c
+            on i.customer_id = c.customer_id
+            and c.first_name = 'Wyatt'
+            and c.last_name = 'Girard'
+        inner join invoice_line il
+            on i.invoice_id = il.invoice_id
+        inner join track t
+            on t.track_id = il.track_id
+            and t.composer is not null
+    group by t.composer
+    order by sum(quantity) desc
+) as maximum;
 
 --8 Vypíšte sumárne zisky z predaja za jednotlivé mesiace a roky.
 -- Pre overenie správnosti dopytu viete, že v apríli 2011 bol celkový zisk
